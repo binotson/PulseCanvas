@@ -15,22 +15,23 @@ This section separates what has been verified from what has not. **Update it aft
 | Enum values match the installed SDK | ✅ Automated (real SDK) | `tests/sdkCodes.test.ts` |
 | Metric field paths match the SDK protobuf schema | ✅ Automated (real schema, synthetic values) | `tests/vitals.test.ts` |
 | Session lifecycle / teardown / frame validation | ✅ Automated (**mock SDK**) | `tests/vitalsService.test.ts` |
-| TypeScript, ESLint, unit tests (65), production build | ✅ Passing | `npm run verify` |
+| TypeScript, ESLint, unit tests (69), production build | ✅ Passing | `npm run verify` |
 | App launches in real Electron 43; all screens render; SDK loads in the Electron main process | ✅ Verified on the dev machine | `npm run smoke` screenshots of onboarding, studio (all 3 styles, idle), insights, gallery, settings, privacy |
 | Windows packaging (`electron-builder --dir`) | ✅ Verified | `release/win-unpacked` built; packaged runtime loaded the SDK from `resources/smartspectra` and discovered the camera; packaged app launched cleanly |
 | NSIS installer (`npm run dist:win`) | ⏳ Not run | — |
-| Live camera capture → SDK frame pipeline in the app | ⏳ Not verified (needs an API key to start a session) | in-app checklist |
-| Live pulse measurement | ⏳ **Not yet verified.** Needs an API key and a person at the camera | `npm run sdk:check -- --measure 60`, then the in-app checklist |
-| Live breathing measurement | ⏳ Not yet verified | as above |
-| Live HRV | ⏳ Not yet verified (the SDK needs about 60 s of steady pulse) | as above |
-| Artwork responding to live signals | ⏳ Not yet verified with live data | README → Manual hardware checklist |
+| Live camera capture → SDK frame pipeline in the app | ✅ Verified on the dev machine (2026-11-07) | `npm run dev`: ~10 live sessions started and stopped; camera light, SDK quality hints, stop, Insights, save and PNG export all worked |
+| Live pulse measurement | ⛔ **Blocked on the dev machine; not yet verified.** The SDK's pulse model (`phasic-bp-inference`) needs Vulkan, and the dev laptop (Intel i7-4600U, HD Graphics, Haswell) has no Vulkan driver on Windows. Needs a PC with Intel 6th-gen+ or a recent AMD/NVIDIA GPU | `npm run sdk:check -- --measure 60` → 0 pulse packets, `Vulkan is not available: vkCreateInstance failed with ErrorIncompatibleDriver` |
+| Live breathing measurement | ✅ Verified on the dev machine (2026-11-07) | `evidence/sdk-check-measure-60.txt`: 14 BREATH readings, settling at 12–17 rpm with confidence 59–72 and `stable=true` |
+| Live HRV | ⛔ Blocked with pulse (HRV comes from the pulse pipeline) | as above |
+| Artwork responding to live signals | 🟡 Breathing verified; pulse-driven visuals pending | Breathing Garden followed live breathing in `npm run dev`. Pulse Waves and the pulse/HRV parts of Living Particles need a Vulkan-capable PC |
+| SDK 3.4.0 Windows device-key bug | ✅ Worked around | After the first run, the SDK can't decrypt its own `device_keys.secure` (`NCryptDecrypt(size) failed: Invalid flags specified`) and every later start fails with `SmartSpectra configuration failed`. `src/main/deviceKeyReset.ts` and `sdk:check` delete the file at startup; no failures in ~10 app sessions afterwards. Worth reporting to Presage |
 
 Do not publish claims about live accuracy or behaviour until the ⏳ rows are checked.
 
 ## 2. Pre-submission checklist
 
-- [ ] Get an API key at https://physiology.presagetech.com/auth/login
-- [ ] `npm run sdk:check -- --measure 60`: confirm PULSE/BREATH lines (save the terminal output)
+- [x] Get an API key at https://physiology.presagetech.com/auth/login
+- [ ] `npm run sdk:check -- --measure 60`: confirm PULSE/BREATH lines (save the terminal output). BREATH done (`evidence/sdk-check-measure-60.txt`); PULSE needs a Vulkan-capable PC
 - [ ] `npm run dev`: complete onboarding, run a 2-minute session in each art style
 - [ ] Capture **real** screenshots: Studio (each style), Insights, Privacy Centre, Gallery
 - [ ] Record the demo video (script below)

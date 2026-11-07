@@ -5,6 +5,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { IPC, isAllowedExternalUrl, type SdkEvent, type SdkInfo, type StorageReport, type WipeOptions } from '@shared/api'
 import { apiKeyStatus, clearStoredApiKey, hasStoredApiKey, resolveApiKey, storeApiKey } from './apiKey'
+import { resetStaleDeviceKeys } from './deviceKeyReset'
 import { loadSdk } from './sdkLoader'
 import {
   APP_ORIGIN,
@@ -226,6 +227,8 @@ app.on('second-instance', () => {
 
 app.whenReady().then(() => {
   if (app.isPackaged) Menu.setApplicationMenu(null)
+  // Before any SDK session in this process; see deviceKeyReset.ts.
+  resetStaleDeviceKeys({ log: (msg) => console.warn(`[pulsecanvas/sdk] ${msg}`) })
   registerAppProtocol(join(__dirname, '../renderer'))
   hardenSession()
   registerIpc()

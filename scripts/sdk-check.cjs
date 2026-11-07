@@ -13,7 +13,8 @@
  *   npm run sdk:check -- --measure 60      # step 1 + 60-second live session
  *
  * The key is read from the environment or the project's .env file.
- * Nothing is written to disk by this script.
+ * On Windows it deletes the SDK's stale device-key cache before measuring
+ * (see src/main/deviceKeyReset.ts); nothing else is written to disk.
  */
 'use strict'
 
@@ -63,6 +64,22 @@ const apiKey = readKey()
 if (!apiKey) {
   console.error('FAIL  SMARTSPECTRA_API_KEY is not set (environment or .env).')
   process.exit(2)
+}
+
+// SDK 3.4.0 Windows bug: a device key provisioned by an earlier process can't be
+// decrypted (NCryptDecrypt "Invalid flags") and start() fails. Same workaround
+// as src/main/deviceKeyReset.ts; set PULSECANVAS_KEEP_DEVICE_KEY=1 to skip.
+if (process.platform === 'win32' && process.env.PULSECANVAS_KEEP_DEVICE_KEY !== '1') {
+  const root = path.join(process.env.LOCALAPPDATA || path.join(require('node:os').homedir(), 'AppData', 'Local'), 'Presage', 'Physiology')
+  if (fs.existsSync(root)) {
+    for (const d of fs.readdirSync(root)) {
+      const f = path.join(root, d, 'emd', 'device_keys.secure')
+      if (fs.existsSync(f)) {
+        fs.rmSync(f, { force: true })
+        console.log(`      reset stale SmartSpectra device key (Windows workaround): ${f}`)
+      }
+    }
+  }
 }
 
 const sdk = new SmartSpectraSDK({

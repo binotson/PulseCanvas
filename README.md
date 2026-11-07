@@ -138,6 +138,8 @@ On first launch, complete onboarding and accept the consent screen. Then press *
 | Quality stuck on "Too dark"/"Too much motion" | Face a soft light source, rest your arms and keep your head still |
 | *Camera is below ~25 fps* | Use 480p in Settings, close heavy apps or improve the lighting (low light lowers webcam fps) |
 | SDK load error on start | Re-run `npm install`. The `@smartspectra/node-sdk-win32-x64` package must be present |
+| `SmartSpectra configuration failed` (code 3) after `NCryptDecrypt(size) failed: Invalid flags specified` | SDK 3.4.0 Windows bug: a device key saved by an earlier run can't be read back. PulseCanvas and `sdk:check` delete `%LOCALAPPDATA%\Presage\Physiology\*\emd\device_keys.secure` at startup so the SDK makes a fresh one (`PULSECANVAS_KEEP_DEVICE_KEY=1` turns this off) |
+| Breathing works but pulse never appears; log shows `phasic-bp-inference ... Vulkan is not available` | The SDK's pulse model needs a Vulkan-capable GPU driver. Intel 4th/5th-gen (Haswell/Broadwell) integrated graphics have none on Windows. Use a PC with Intel 6th-gen+ or a recent AMD/NVIDIA GPU |
 
 Set `SMARTSPECTRA_DIAGNOSTICS=1` for extra SDK logging.
 

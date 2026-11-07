@@ -15,13 +15,18 @@ export function devServerUrl(): string | null {
 
 export function trustedOrigin(): string {
   const dev = devServerUrl()
-  return dev ? new URL(dev).origin : APP_ORIGIN
+  return dev ? originOf(new URL(dev)) : APP_ORIGIN
+}
+
+/** `URL.origin` is "null" for non-special schemes like app://, so compare explicitly. */
+function originOf(u: URL): string {
+  return `${u.protocol}//${u.host}`
 }
 
 export function isTrustedUrl(url: string | undefined | null): boolean {
   if (!url) return false
   try {
-    return new URL(url).origin === trustedOrigin()
+    return originOf(new URL(url)) === trustedOrigin()
   } catch {
     return false
   }
@@ -92,8 +97,10 @@ export function hardenSession(ses: Session = session.defaultSession): void {
     callback(types.length > 0 && types.every((t) => t === 'video'))
   })
 
-  ses.setPermissionCheckHandler((_wc, permission, requestingOrigin) => {
-    return permission === 'media' && isTrustedUrl(requestingOrigin)
+  ses.setPermissionCheckHandler((_wc, permission, requestingOrigin, details) => {
+    if (permission !== 'media' || !isTrustedUrl(requestingOrigin)) return false
+    const mediaType = (details as { mediaType?: string }).mediaType
+    return mediaType === undefined || mediaType === 'video'
   })
 
   ses.setDevicePermissionHandler(() => false)

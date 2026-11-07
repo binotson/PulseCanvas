@@ -19,7 +19,7 @@ export function Onboarding(): ReactNode {
   }
 
   return (
-    <div className="relative flex h-full items-center justify-center overflow-y-auto p-8">
+    <div className="relative flex h-full items-center justify-center overflow-y-auto overflow-x-hidden p-8">
       <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-violet/25 blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-pink/20 blur-[120px]" />
       <div className="pointer-events-none absolute left-1/2 top-1/3 h-[300px] w-[300px] rounded-full bg-cyan/10 blur-[100px]" />

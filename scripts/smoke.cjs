@@ -5,7 +5,8 @@
  *
  *   npm run build:only && node scripts/smoke.cjs <screen> <output.png>
  *
- * <screen> = onboarding | studio | settings | privacy | gallery | insights
+ * <screen> = onboarding | studio[:pulse-waves|breathing-garden|living-particles]
+ *            | settings | privacy | gallery | insights
  *
  * For screens past onboarding, settings are pre-seeded with consent so the
  * app opens straight to the studio. This exercises the real main process,
@@ -17,14 +18,14 @@ const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
 
-const screen = process.argv[2] || 'onboarding'
+const [screen, artMode = 'pulse-waves'] = (process.argv[2] || 'onboarding').split(':')
 const out = path.resolve(process.argv[3] || `smoke-${screen}.png`)
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pulsecanvas-smoke-'))
 
 if (screen !== 'onboarding') {
   fs.writeFileSync(
     path.join(dir, 'settings.json'),
-    JSON.stringify({ onboardingComplete: true, consentAcceptedAt: new Date().toISOString(), defaultArtMode: 'pulse-waves' })
+    JSON.stringify({ onboardingComplete: true, consentAcceptedAt: new Date().toISOString(), defaultArtMode: artMode })
   )
 }
 

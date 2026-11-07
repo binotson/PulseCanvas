@@ -1,0 +1,58 @@
+appId: com.pulsecanvas.app
+productName: PulseCanvas
+copyright: Copyright © 2026 PulseCanvas contributors
+directories:
+  output: release
+  buildResources: build
+
+# App code. The SmartSpectra per-platform native runtimes are excluded from
+# the asar and shipped as extraResources instead (see per-OS blocks below),
+# as recommended in the @smartspectra/node-sdk README. The main process then
+# points SMARTSPECTRA_CAPI_PATH at resources/smartspectra/ (src/main/sdkLoader.ts).
+files:
+  - out/**/*
+  - package.json
+  - '!**/node_modules/@smartspectra/node-sdk-win32-x64/**'
+  - '!**/node_modules/@smartspectra/node-sdk-linux-x64/**'
+  - '!**/node_modules/@smartspectra/node-sdk-linux-arm64/**'
+  - '!**/node_modules/@smartspectra/node-sdk-darwin-arm64/**'
+  - '!**/*.{md,map,ts}'
+  - '!**/{test,tests,__tests__,docs,example,examples}/**'
+
+asar: true
+# koffi loads a native .node module, which cannot be loaded from inside an asar.
+asarUnpack:
+  - '**/node_modules/koffi/**'
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  extraResources:
+    - from: node_modules/@smartspectra/node-sdk-win32-x64/
+      to: smartspectra/
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-Setup-${version}.${ext}
+
+mac:
+  target: [dmg]
+  category: public.app-category.graphics-design
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSCameraUsageDescription: PulseCanvas uses your camera to measure pulse and breathing on this device and turn them into artwork.
+  extraResources:
+    - from: node_modules/@smartspectra/node-sdk-darwin-${arch}/
+      to: smartspectra/
+
+linux:
+  target: [AppImage]
+  category: Graphics
+  extraResources:
+    - from: node_modules/@smartspectra/node-sdk-linux-${arch}/
+      to: smartspectra/

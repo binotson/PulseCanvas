@@ -28,6 +28,7 @@
     "test:watch": "vitest",
     "verify": "npm run typecheck && npm run lint && npm run test && electron-vite build",
     "sdk:check": "node scripts/sdk-check.cjs",
+    "smoke": "electron-vite build && node scripts/smoke.cjs",
     "pack": "npm run build && electron-builder --dir",
     "dist:win": "npm run build && electron-builder --win"
   },

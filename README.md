@@ -98,6 +98,7 @@ On first launch, complete onboarding and accept the consent screen. Then press *
 | `npm run verify` | typecheck + lint + test + build |
 | `npm run sdk:check` | **Real hardware check:** loads the native SDK and lists cameras (no key needed) |
 | `npm run sdk:check -- --measure 60` | **Real live measurement** in the terminal for 60 s (needs `SMARTSPECTRA_API_KEY`) |
+| `npm run smoke -- studio out.png` | Launch the built app in real Electron (isolated profile), screenshot a screen, quit |
 | `npm run pack` | Unpacked packaged app in `release/` (packaging check) |
 | `npm run dist:win` | Windows NSIS installer in `release/` |
 

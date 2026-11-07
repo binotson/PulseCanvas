@@ -3,7 +3,8 @@
  * Launches the BUILT app (out/) in real Electron with an isolated, temporary
  * user-data directory, captures a screenshot of the window, and exits.
  *
- *   npm run build:only && node scripts/smoke.cjs <screen> <output.png>
+ *   npx electron-vite build && node scripts/smoke.cjs <screen> <output.png>
+ *   (or: npm run smoke -- studio:breathing-garden shot.png)
  *
  * <screen> = onboarding | studio[:pulse-waves|breathing-garden|living-particles]
  *            | settings | privacy | gallery | insights

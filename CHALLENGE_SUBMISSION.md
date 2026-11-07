@@ -15,7 +15,11 @@ This section separates what has been verified from what has not. **Update it aft
 | Enum values match the installed SDK | ✅ Automated (real SDK) | `tests/sdkCodes.test.ts` |
 | Metric field paths match the SDK protobuf schema | ✅ Automated (real schema, synthetic values) | `tests/vitals.test.ts` |
 | Session lifecycle / teardown / frame validation | ✅ Automated (**mock SDK**) | `tests/vitalsService.test.ts` |
-| TypeScript, ESLint, unit tests, production build | ✅ See README → Testing | `npm run verify` |
+| TypeScript, ESLint, unit tests (65), production build | ✅ Passing | `npm run verify` |
+| App launches in real Electron 43; all screens render; SDK loads in the Electron main process | ✅ Verified on the dev machine | `npm run smoke` screenshots of onboarding, studio (all 3 styles, idle), insights, gallery, settings, privacy |
+| Windows packaging (`electron-builder --dir`) | ✅ Verified | `release/win-unpacked` built; packaged runtime loaded the SDK from `resources/smartspectra` and discovered the camera; packaged app launched cleanly |
+| NSIS installer (`npm run dist:win`) | ⏳ Not run | — |
+| Live camera capture → SDK frame pipeline in the app | ⏳ Not verified (needs an API key to start a session) | in-app checklist |
 | Live pulse measurement | ⏳ **Not yet verified.** Needs an API key and a person at the camera | `npm run sdk:check -- --measure 60`, then the in-app checklist |
 | Live breathing measurement | ⏳ Not yet verified | as above |
 | Live HRV | ⏳ Not yet verified (the SDK needs about 60 s of steady pulse) | as above |
